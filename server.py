@@ -27,6 +27,11 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # cấu hình kết nối
 s.bind((IP, PORT))  # lắng nghe
 s.listen(3)  # thiết lập tối ta 1 kết nối đồng thời
 conn, addr = s.accept()  # chấp nhận kết nối và trả về thông số
+
+accA = 1500
+accB = 300
+accC = 750
+accD = 2500
 with conn:
     try:
         # in ra thông địa chỉ của client
@@ -35,31 +40,23 @@ with conn:
             msg = ""
             # Đọc nội dung client gửi đến
             data = conn.recv(1024)
-            if 'test' == data.decode():
-                msg = data.decode() + "@@@"
-                conn.sendall(msg.encode())
-                msg = ""
-            elif 'AAA' == data.decode():
-                msg = data.decode() + "OOO"
-                conn.sendall(msg.encode())
-                msg = ""
-            elif data.decode() == 'END':  # nếu không còn data thì dừng đọc
+            cmd = data.decode()
+            if data.decode() == 'END':  # nếu không còn data thì dừng đọc
                 print("Client disconnected!\n")
                 break
-            elif data.decode() == 'hi server':
-                while True:
-                    mes = input("Server: ")
-                    conn.sendall(mes.encode())
-                    rec = conn.recv(1024)
-                    if rec.decode() == 'OK':
-                        break
-                    print('Client: ', rec.decode())
-            elif 'run' == data.decode():
-                for i in range(100):
-                    conn.sendall('data sending!!'.encode())
+            elif cmd[0] == 'W' and cmd[1] == 'A':
+                accA += int(cmd[2:])
+                conn.sendall('Transaction completed!'.encode())
+            elif data.decode() == 'RA':
+                conn.sendall(str(accA).encode())
+            elif data.decode() == 'RB':
+                conn.sendall(str(accB).encode())
+            elif data.decode() == 'RC':
+                conn.sendall(str(accC).encode())
+            elif data.decode() == 'RD':
+                conn.sendall(str(accD).encode())
             else:
-                # Và gửi nội dung về máy khách
-                conn.sendall(randStr(5).encode())
+                conn.sendall('Account do not exist!\n'.encode())
             # In ra Nội dung
             print('Client: ', data.decode())
 
