@@ -7,6 +7,10 @@ def getSum(a=5, b=4):
     return a + b
 
 
+def getDev(a, b):
+    return a * b
+
+
 def randStr(num):
     abc = ""
     for i in range(num):
