@@ -1,24 +1,4 @@
 import socket
-import random
-import string
-
-
-def getSum(a=5, b=4):
-    return a + b
-
-
-def getDev(a, b):
-    return a * b
-
-
-def randStr(num):
-    abc = ""
-    for i in range(num):
-        # upper_alphabet = string.ascii_uppercase
-        # random_letter = random.choice(string.ascii_uppercase)
-        abc += random.choice(string.ascii_uppercase)
-    return abc
-
 
 HOST = 'localhost'  # Thiết lập địa chỉ address
 IP = "127.0.0.1"
@@ -32,6 +12,8 @@ accA = 1500
 accB = 300
 accC = 750
 accD = 2500
+value = [('acc1', 1500), ('acc2', 500), ('acc3', 750)]
+info = dict(value)
 with conn:
     try:
         # in ra thông địa chỉ của client
