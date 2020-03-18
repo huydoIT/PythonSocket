@@ -1,5 +1,10 @@
 import socket
 
+def getAcc(name):
+    switcher = {'A': 'accA', 'B': 'accB', 'C': 'accC', 'D': 'accD'}
+    return switcher.get(name, "Err")
+
+
 HOST = 'localhost'  # Thiết lập địa chỉ address
 IP = "127.0.0.1"
 PORT = 8000  # Thiết lập post lắng nghe
@@ -12,35 +17,37 @@ accA = 1500
 accB = 300
 accC = 750
 accD = 2500
-value = [('acc1', 1500), ('acc2', 500), ('acc3', 750)]
+value = [('accA', 1500), ('accB', 500), ('accC', 750), ('accD', 2000)]
 info = dict(value)
 with conn:
     try:
         # in ra thông địa chỉ của client
         print('Connected by', addr)
         while True:
-            msg = ""
             # Đọc nội dung client gửi đến
-            data = conn.recv(1024)
-            cmd = data.decode()
-            if data.decode() == 'END':  # nếu không còn data thì dừng đọc
+            cmd = conn.recv(1024).decode()
+            # cmd = data.decode()
+            if cmd == 'END':  # nếu không còn data thì dừng đọc
                 print("Client disconnected!\n")
                 break
-            elif cmd[0] == 'W' and cmd[1] == 'A':
-                accA += int(cmd[2:])
-                conn.sendall('Transaction completed!'.encode())
-            elif data.decode() == 'RA':
-                conn.sendall(str(accA).encode())
-            elif data.decode() == 'RB':
-                conn.sendall(str(accB).encode())
-            elif data.decode() == 'RC':
-                conn.sendall(str(accC).encode())
-            elif data.decode() == 'RD':
-                conn.sendall(str(accD).encode())
+            if cmd == 'Error':  # nếu không còn data thì dừng đọc
+                conn.sendall('Syntax error!! Try again.\n'.encode())
+            if len(cmd) == 2:
+                infoAcc = getAcc(cmd[1])
+                if infoAcc not in info.keys():
+                    conn.sendall('Account do not exist!\n'.encode())
+                else:
+                    conn.sendall(str(info.get(infoAcc)).encode())
             else:
-                conn.sendall('Account do not exist!\n'.encode())
+                infoAcc = getAcc(cmd[1])
+                if infoAcc not in info.keys():
+                    conn.sendall('Account do not exist!\n'.encode())
+                else:
+                    money = int(cmd[2:])
+                    info[infoAcc] += money
+                    conn.sendall('Transaction completed!'.encode())
             # In ra Nội dung
-            print('Client: ', data.decode())
+            print('Client: ', cmd)
 
     finally:
         s.close()  # đóng socket
