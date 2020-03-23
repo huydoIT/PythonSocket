@@ -1,4 +1,5 @@
 import socket
+import pickle
 
 
 HOST = 'localhost'  # Cấu hình address server
@@ -18,7 +19,7 @@ while True:
         elif cmd[1] == "I":
             mes = "W" + cmd[0] + cmd[2:]
         else:
-            mes = "Error"
+            mes = cmd
     s.sendall(mes.encode())
     rec = s.recv(1024)
     if not rec:
