@@ -1,6 +1,6 @@
 import mysql.connector
 
-conn = mysql.connector.connect(host="localhost", user="root", passwd="", database="test")
+conn = mysql.connector.connect(host="localhost", user="root", passwd="", database="acc_db")
 cur = conn.cursor()
 
 
@@ -23,10 +23,10 @@ def get_data():
 
 def get_by_acc(acc):
     try:
-        sql = "SELECT balance FROM account WHERE acc = %s"
+        sql = "SELECT balance FROM account WHERE acc =%s"
 
         cur.execute(sql, (acc,))
-        rs = cur.fetchall()
+        rs = cur.fetchone()
         if not rs:
             return None
         else:
@@ -46,3 +46,15 @@ def get_test():
             return rs
     except:
         conn.rollback()
+
+
+def update_data(value):
+    try:
+        sql = "UPDATE `account` SET `balance`=%s WHERE `acc`=%s"
+        # adr = tuple()  # ("accB", )
+        cur.execute(sql, value)
+        conn.commit()
+        return 1
+    except:
+        conn.rollback()
+        return 0

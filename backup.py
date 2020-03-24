@@ -30,26 +30,31 @@ with conn:
             if cmd == 'END':  # nếu không còn data thì dừng đọc
                 print("Client disconnected!\n")
                 break
-            name = str(getAcc(cmd[1]))
-            print(name)
-            db = cnt.get_by_acc(name)
-            if not db:
-                conn.sendall('Account do not exist!'.encode())
-            else:
-                if cmd[0] == 'R':  # check message
-                    conn.sendall(str(db[0]).encode())
-                    # print("Done!!!") Test
+            if cmd.find("getDB") == -1:  # get data from DB
+                # name = cmd[7:10]
+                rs = cnt.get_by_acc(cmd[7:10])
+                if not rs:
+                    conn.sendall('Account do not exist!'.encode())
                 else:
-                    balance = int(db[0]) + int(cmd[2:])
-                    if balance < 0:
-                        conn.sendall('Balance not enough!'.encode())
-                    else:
-                        if cnt.update_data((balance, name)) == 1:
-                            db = cnt.get_by_acc(name)
-                            conn.sendall(str(db[0]).encode())
-                        else:
-                            conn.sendall('Update failed!'.encode())
-                        # conn.sendall('Transaction completed!'.encode())
+                    for x in rs:
+                        conn.sendall(str(s).encode())
+                    print("Done!!!\n")
+            if cmd == 'Error':  # nếu không còn data thì dừng đọc
+                conn.sendall('Syntax error!! Try again.'.encode())
+            if len(cmd) == 2:
+                infoAcc = getAcc(cmd[1])
+                if infoAcc not in info.keys():
+                    conn.sendall('Account do not exist!'.encode())
+                else:
+                    conn.sendall(str(info.get(infoAcc)).encode())
+            else:
+                infoAcc = getAcc(cmd[1])
+                if infoAcc not in info.keys():
+                    conn.sendall('Account do not exist!'.encode())
+                else:
+                    money = int(cmd[2:])
+                    info[infoAcc] += money
+                    conn.sendall('Transaction completed!'.encode())
             # In ra Nội dung
             print('Client: ', cmd)
 
